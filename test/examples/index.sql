@@ -1,0 +1,11 @@
+use db0;
+create index idx01 on account(balance);
+show indexes;
+select * from account where balance = 56789;
+select * from account where balance = 45678;
+select * from account where id < 12515000 and balance < 100;
+delete from account where name = "name45678";
+insert into account values(45678, "name45678", 45678);
+drop index idx01;
+show indexes;
+select * from account where balance = 45678;

@@ -1,0 +1,5 @@
+minisql > [INFO] Sql syntax parse ok!
+Database changed
+Total execution for file: ./test/examples/insert_tuple.sql, 100001/100001 commands succeeded (9.5760 sec)
+minisql > [INFO] Sql syntax parse ok!
+Bye.

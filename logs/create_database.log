@@ -1,0 +1,11 @@
+minisql > [INFO] Sql syntax parse ok!
++----------+
+| Database |
++----------+
+| db1      |
+| db0      |
+| db2      |
++----------+
+Total execution for file: ./test/examples/create_database.sql, 1/1 commands succeeded (0.0000 sec)
+minisql > [INFO] Sql syntax parse ok!
+Bye.

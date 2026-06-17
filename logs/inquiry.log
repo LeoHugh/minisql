@@ -1,0 +1,5 @@
+minisql > [INFO] Sql syntax parse ok!
+Database changed
+Total execution for file: ./test/examples/inquiry.sql, 7/7 commands succeeded (1.7930 sec)
+minisql > [INFO] Sql syntax parse ok!
+Bye.

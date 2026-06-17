@@ -1,0 +1,18 @@
+minisql > [INFO] Sql syntax parse ok!
+Database changed
++-------------------------+
+| Table_name | Index_name |
++-------------------------+
+| account    | idx01      |
+| account    | name_unq   |
+| account    | pkey       |
++-------------------------+
++-------------------------+
+| Table_name | Index_name |
++-------------------------+
+| account    | name_unq   |
+| account    | pkey       |
++-------------------------+
+Total execution for file: ./test/examples/index.sql, 11/11 commands succeeded (2.6320 sec)
+minisql > [INFO] Sql syntax parse ok!
+Bye.
