@@ -57,7 +57,7 @@ class IndexInfo {
   ~IndexInfo() {
     delete meta_data_;
     delete index_;
-    delete key_schema_;
+    delete key_schema_;//不会导致重复释放内存
   }
 
 /**

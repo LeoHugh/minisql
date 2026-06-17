@@ -469,8 +469,8 @@ dberr_t ExecuteEngine::ExecuteCreateTable(pSyntaxNode ast, ExecuteContext *conte
       is_primary_key = true;
     }
     if (is_primary_key) {
-      is_nullable = false;
-      is_unique = true;
+      is_nullable = false;//不可为空
+      is_unique = true;//一定unique
     }
 
     if (type == TypeId::kTypeChar) {
@@ -485,7 +485,7 @@ dberr_t ExecuteEngine::ExecuteCreateTable(pSyntaxNode ast, ExecuteContext *conte
   // 3. create table
   Schema *schema = new Schema(columns);
   TableInfo *table_info;
-  //调用getcatalog
+  //调用getcatalog,输出参数为table_info
   dberr_t create_table = context->GetCatalog()->CreateTable(table_name, schema, context->GetTransaction(), table_info);
   if (create_table != DB_SUCCESS) {
     ExecuteInformation(create_table);
@@ -643,8 +643,8 @@ dberr_t ExecuteEngine::ExecuteCreateIndex(pSyntaxNode ast, ExecuteContext *conte
   pSyntaxNode index_keys_node = ast->child_->next_->next_;
   //默认为bptree索引
   pSyntaxNode index_type_node = index_keys_node->next_;
-  std::vector<std::string> index_keys;
-  std::vector<uint32_t> index_key_idxs;
+  std::vector<std::string> index_keys;//列名
+  std::vector<uint32_t> index_key_idxs; //列在schema中的索引
   for (auto child = index_keys_node->child_; child != nullptr; child = child->next_) {
     uint32_t index;
     index_keys.emplace_back(child->val_);
@@ -656,6 +656,7 @@ dberr_t ExecuteEngine::ExecuteCreateIndex(pSyntaxNode ast, ExecuteContext *conte
   if (index_type_node != nullptr) {
     index_type = index_type_node->val_;
   }
+  //构建索引
   dberr_t create_index = context->GetCatalog()->CreateIndex(table_name, index_name, index_keys,
                                                              context->GetTransaction(), index_info, index_type);
   if (create_index != DB_SUCCESS) {
@@ -672,6 +673,7 @@ dberr_t ExecuteEngine::ExecuteCreateIndex(pSyntaxNode ast, ExecuteContext *conte
     if (!get_tuple) {
       continue;
     }
+    //只取需要的列
     std::vector<Field> index_key_fields;
     for (auto key_idx : index_key_idxs) {
       Field *field = row.GetField(key_idx);
@@ -701,10 +703,10 @@ dberr_t ExecuteEngine::ExecuteDropIndex(pSyntaxNode ast, ExecuteContext *context
   if (ast == nullptr || ast->child_ == nullptr) {
     return DB_FAILED;
   }
-
+  //index
   std::string index_name = ast->child_->val_;
   std::string table_name;
-
+  //如果没有指定表名，则遍历所有表，查找该索引
   if (ast->child_->next_ != nullptr) {
     table_name = ast->child_->next_->val_;
   } else {
@@ -800,6 +802,7 @@ dberr_t ExecuteEngine::ExecuteExecfile(pSyntaxNode ast, ExecuteContext *context)
     char ch;
     while (!feof(file)) {
       ch = getc(file);
+
       if (ch == EOF || ch == ';')
         break;
       input[i++] = ch;
@@ -808,6 +811,7 @@ dberr_t ExecuteEngine::ExecuteExecfile(pSyntaxNode ast, ExecuteContext *context)
         break;
       }
     }
+    //如果为空，直接continue
     if (i == 0 && ch == EOF)
       continue;
     if (ch == ';')
@@ -916,9 +920,9 @@ dberr_t ExecuteEngine::ExecuteExecfile(pSyntaxNode ast, ExecuteContext *context)
       commands_scceeded++;
     }
 
-    MinisqlParserFinish();
-    yy_delete_buffer(bp);
-    yylex_destroy();
+    MinisqlParserFinish();//释放语法树
+    yy_delete_buffer(bp);//删除缓冲区
+    yylex_destroy();//销毁词法分析器
     if (feof(file))
       break;
   }

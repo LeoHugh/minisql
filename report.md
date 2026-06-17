@@ -65,7 +65,7 @@ rollbackdelete:回滚删除，对于标记删除是方便回滚的。
 封装了page层的细节，sql执行器不需要关系具体到哪个page
 ## 堆表的iterator迭代
 一个row* 一个tableheap*
-
+![alt text](Lab2.png)
 
 # INDEX MANAGER ！！！
 ## pege 
@@ -169,6 +169,7 @@ flowchart TD
 # CATALOG MANAGER 目录管理器
 ## catalog.h
 catalogmanager是对外暴露的统一接口，其职责是在内存中维护所有表和索引的映射，并处理相关的ddl请求
+可以冷启动也可以热启动
 
 * 内存层 维护了多张hash maps
 table_names-->table_id-->table_info
@@ -188,16 +189,6 @@ createtable，这里的tableinfo是输出参数
 * 元数据:indexmetadata.同理需要序列化和反序列化
 * 运行时数据：indexinfo=meta+schema+indexbptree.注意，这里的列shema是浅拷贝，只读
 
-
-
-感觉也可以重构一下哦，写得也一般!
-
-
-
-
-
-
-
 # PLANNER AND EXECUTOR
 parser and planner已经被执行好了
 换言之，这里已经有一个好的planner tree了
@@ -207,7 +198,7 @@ parser and planner已经被执行好了
 可在https://dreampuf.github.io/实现可视化
 
 ExecuteEngine::ExecuteCreateTable(pSyntaxNode ast, ExecuteContext *context)
-首先是从语法树中拿到tablename,以及找到主键,然后根据属性构建列
+首先是从语法树中拿到tablename,以及找到主键(只允许1),以及列的数据类型以及属性，然后根据属性构建table
 再构建主键以及unique index的bptree
 
 删除表则直接得到即可
@@ -217,7 +208,10 @@ dberr_t ExecuteEngine::ExecuteDropTable(pSyntaxNode ast, ExecuteContext *context
 dberr_t ExecuteEngine::ExecuteShowIndexes(pSyntaxNode ast, ExecuteContext *context) 
 
 dberr_t ExecuteEngine::ExecuteCreateIndex(pSyntaxNode ast, ExecuteContext *context) 
+
 dberr_t ExecuteEngine::ExecuteDropIndex(pSyntaxNode ast, ExecuteContext *context) 
+dropindex支持无表名与有表名两种case
+
 dberr_t ExecuteEngine::ExecuteExecfile(pSyntaxNode ast, ExecuteContext *context) 
 dberr_t ExecuteEngine::ExecuteQuit(pSyntaxNode ast, ExecuteContext *context) 
 
@@ -322,8 +316,9 @@ struct CheckPoint {
 单机的，分布式存储，
 节点间的通信，
 主从复制
+分库分表
 
-
+优化器过于简单，lru策略过于简单
 
 
 
@@ -332,7 +327,6 @@ struct CheckPoint {
 # 关于使用ai的说明感悟
 看代码，在写代码前理解每个函数的职责。因为其实注释不是很清晰。
 debug时也有帮助，但不能解决所有问题。
-辅助编写一些测试用例。
 
 不足:
 代码冗余，防御性编程问题。
@@ -340,7 +334,5 @@ debug时也有帮助，但不能解决所有问题。
 整体上去做一个架构，bufferpool内存的管理问题，你放这个函数里也行，你放那个函数也行。那究竟在哪里管理呢?调用者负责管理吗?
 
 碰到过的最大的问题，
-if (is_dirty) {
-    page.is_dirty_ = true;
-}
-不要被迷惑了!!!这个事情很重要
+第一部分脏页的逻辑写错了，然后过了测试
+结果后面出了问题
