@@ -1,9 +1,0 @@
-minisql > [INFO] Sql syntax parse ok!
-Database changed
-+---------------+
-| Tables_in_db0 |
-+---------------+
-+---------------+
-Total execution for file: ./test/examples/delete.sql, 7/7 commands succeeded (4.4150 sec)
-minisql > [INFO] Sql syntax parse ok!
-Bye.
